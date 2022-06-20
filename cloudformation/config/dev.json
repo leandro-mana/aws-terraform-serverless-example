@@ -1,0 +1,13 @@
+{
+  "Parameters": {
+    "Environment": "dev",
+    "Project": "data-core"
+  },
+  "Tags": {
+    "Owner": "DataTeam",
+    "Product": "DataCore",
+    "Severity": "High",
+    "Environment": "Development",
+    "DeletionPolicy": "Retain"
+  }
+}

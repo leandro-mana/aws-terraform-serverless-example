@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+
+Description: Data Core Stack
+
+Parameters:
+  Project:
+    Type: String
+    Description: Project or Product Name
+  Environment:
+    Type: String
+    Description: Environment of the infrastructure
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub ${Project}-terraform-state-${AWS::Region}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  TerraformStateDDBTable: 
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${Project}-terraform-state-table
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+
+Outputs:
+  TerraformStateBucketName:
+    Description: Terraform State Bucket Name
+    Value: !Ref TerraformStateBucket
+    Export:
+      Name: !Sub ${AWS::StackName}-tf-state-s3-name
+
+  TerraformStateDDBTableName:
+    Description: Terraform State DDB Table Name
+    Value: !Ref TerraformStateDDBTable
+    Export:
+      Name: !Sub ${AWS::StackName}-tf-state-ddb-name
