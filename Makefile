@@ -1,5 +1,5 @@
 # Globals
-.PHONY: help cfn
+.PHONY: help cicd_local_env cfn/% tf/% pylint mypy pytest
 .DEFAULT: help
 .ONESHELL:
 .SILENT:
@@ -24,9 +24,13 @@ help:
 	$(INFO) "Supported Environments: $$ENVS"
 	$(INFO) "List of Supported Targets:"
 	@echo -e "cicd_local_env        -> $$CICD_LOCAL_ENV_TARGET"
+	@echo -e "pylint                -> Python Linter"
+	@echo -e "mypy                  -> MyPy Code Check"
+	@echo -e "test                -> pylint, mypy and PyTest"
 	@echo -e "<type>/<action>/<env> -> $$DEPLOY_TARGET"
 	@echo -e "\ttype:cfn action:deploy"
-	@echo -e "\ttype:tf  action:plan|deploy|destroy|output"	
+	@echo -e "\ttype:tf  action:plan|deploy|destroy|output\n"
+
 
 cicd_local_env:
 	$(INFO) "$$CICD_LOCAL_ENV_TARGET"
@@ -38,7 +42,17 @@ cfn/deploy/% tf/plan/% tf/deploy/% tf/destroy/% tf/output/% :
 	deploy $$TARGET
 
 tf/fmt:
+	$(INFO) "Terraform Recursive Format"
 	terraform fmt -recursive terraform
 
 pylint:
-	pylint src/hello_app/hello.py
+	$(INFO) "Pylint"
+	pylint src/
+
+mypy:
+	$(INFO) "MyPy"
+	mypy src/
+
+test: pylint mypy
+	$(INFO) "Pyliny, MyPy, PyTest"
+	pytest test

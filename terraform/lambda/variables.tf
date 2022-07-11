@@ -25,7 +25,13 @@ variable "artifact_s3_key" {
 variable "policy_file_path" {
   description = "The JSON file path for the policy document"
   type        = string
+  default     = ""
+}
 
+variable "iam_policy_json_document" {
+  description = "The JSON policy document when policy_file_path is null"
+  type        = string
+  default     = ""
 }
 
 # Cloudwatch log group
@@ -53,4 +59,9 @@ variable "handler" {
 variable "source_code_hash" {
   description = "The Lambda source code hash"
   type        = string
+}
+
+variable "environment_vars" {
+  description = "The Lambda Environmental variables"
+  type        = list(any)
 }
