@@ -17,9 +17,10 @@ The purpose of this repository is to provide an end-to-end AWS API ServerLess in
     - IAM Role and Policy
     - Lambda Permission
     - cloudwatch log group
+    - Dynamo DB Table
 
 The Infrastructure diagram:
-![](img/hello_app_aws.png)
+![](img/aws-tf-serverless-example.drawio.png)
 
 The pattern used for the infrastructure as code is the following:
 - `Cloudformation:` [template](cloudformation/template.yaml), only containing the minimum requirement of AWS Infrastrcture for Terraform [remote state](https://www.terraform.io/language/state/remote).
@@ -56,11 +57,10 @@ make cicd_local_env
 
 # 4 - Once inside Docker
 #   - Setup Python Virtual Environment
-#   - Check code quality
-#   - Local run of the app
-source venv
-make pylint
-python src/hello_app/hello.py
+#   - Check code quality, check and tests
+python -m venv .venv && source .venv/bin/activate
+pip install --upgrade pip && pip install -r requirements.txt
+make test
 
 # 5 - Deploy Cloudformation in dev
 make cfn/deploy/dev
@@ -69,7 +69,7 @@ make cfn/deploy/dev
 make tf/plan/dev
 
 # 7 - Terraform deploy
-make tf/deploy/dev
+ make tf/deploy/dev
 
 # Terraform output like
 hello_app_base_url = "https://<hash>.execute-api.<region>.amazonaws.com/hello_app-stage"
@@ -77,12 +77,22 @@ hello_app_base_url = "https://<hash>.execute-api.<region>.amazonaws.com/hello_ap
 # 8 - API invoke and output
 curl "https://<hash>.execute-api.<region>.amazonaws.com/hello_app-stage/hello"
 
-"Hello Lambda!"
+-> "Hello Lambda!"
 
-# 9 - API Inkoke with Name argument and output
+curl -X POST "https://<hash>.execute-api.<region>.amazonaws.com/movies_app-stage/movies"
+
+-> {"message": "Successfully inserted data!"}
+
+# 9 - API Inkoke with argument and output
 curl "https://<hash>.execute-api.<region>.amazonaws.com/hello_app-stage/hello?Name=Leo"
 
-"Hello Leo!"
+-> "Hello Leo!"
+
+curl -X POST "https://<hash>.execute-api.<region>.amazonaws.com/movies_app-stage/movies" \
+    --header 'Content-Type: application/json' \
+    -d '{"year":1977, "title":"Starwars"}'
+
+-> {"message": "Successfully inserted data!"}
 
 # 10 - if at any point the hello_app_base_url is needed, run
 make tf/output/dev
@@ -92,6 +102,8 @@ make tf/destroy/dev
 ```
 
 This example can be extended to different `environments` by adding the respective configuration in [cloudformation config](cloudformation/config/) and [terraform config](terraform/config/), then using as the flow shown above, changing the `<env>` in the Make target for the corresponding name.
+
+The [mypy](http://mypy-lang.org/) and the [pytest](https://docs.pytest.org/) configuration is scalable for a real project, but the unit tests added into the [test](./test/) folder is to show how to store them along with the configuration but are just an example of assertions.
 
 **NOTE:** To `destroy Cloudformation`, do it via the AWS Web Console, as the infrastructure defined in there implies an S3 Bucket, that has a Retain policy, plus it needs to be emptied before deletion. This is done for security reasons to simulate a production environment in where the Terraform states needs to be preserved. Regarding the AWS Environmental variables, when used in CICD, like [Github Actions](https://docs.github.com/en/actions), should be an [environment secret](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment), to use the same names on different environments.
 

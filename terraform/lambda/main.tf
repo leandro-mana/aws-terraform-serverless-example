@@ -26,7 +26,7 @@ resource "aws_iam_role" "lambda_execution_role" {
 
 resource "aws_iam_policy" "lambda_execution_policy" {
   name   = "${var.name}-policy"
-  policy = file(var.policy_file_path)
+  policy = var.policy_file_path != "" ? file(var.policy_file_path) : var.iam_policy_json_document
 }
 
 resource "aws_iam_role_policy_attachment" "policy_attach" {
@@ -48,4 +48,11 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = var.source_code_hash
   role             = aws_iam_role.lambda_execution_role.arn
   tags             = var.tags
+
+  dynamic "environment" {
+    for_each = var.environment_vars
+    content {
+      variables = environment.value
+    }
+  }
 }
