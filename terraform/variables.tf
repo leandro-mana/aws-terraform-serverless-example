@@ -20,6 +20,25 @@ variable "aws_region" {
   default     = "ap-southeast-2"
 }
 
+# Lambda PowerTools Provided Layer
+variable "aws_provided_layer_account_id" {
+  description = "AWS Provided Account Id for Lambda Power Tools Layer"
+  type        = string
+  default     = "017000801446"
+}
+
+variable "aws_provided_layer_name" {
+  description = "AWS Provided Layer Name for Lambda Power Tools Layer"
+  type        = string
+  default     = "AWSLambdaPowertoolsPython"
+}
+
+variable "aws_provided_layer_version" {
+  description = "AWS Provided Layer Version for Lambda Power Tools Layer"
+  type        = string
+  default     = "22"
+}
+
 # Cloudwatch log group
 variable "log_retention_in_days" {
   description = "The log retention time in days"

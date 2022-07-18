@@ -48,6 +48,7 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = var.source_code_hash
   role             = aws_iam_role.lambda_execution_role.arn
   tags             = var.tags
+  layers           = var.layers != [] ? var.layers : []
 
   dynamic "environment" {
     for_each = var.environment_vars
