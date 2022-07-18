@@ -20,6 +20,7 @@ The purpose of this repository is to provide an end-to-end AWS API ServerLess in
     - Dynamo DB Table
 
 The Infrastructure diagram:
+
 ![](img/aws-tf-serverless-example.drawio.png)
 
 The pattern used for the infrastructure as code is the following:
