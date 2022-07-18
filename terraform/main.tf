@@ -41,6 +41,9 @@ module "lambda_hello_app" {
   source_code_hash      = data.archive_file.hello_app.output_base64sha256
   policy_file_path      = "./iam_policies/lambda_generic.json"
   log_retention_in_days = var.log_retention_in_days
+  layers = [
+    "arn:aws:lambda:${var.aws_region}:${var.aws_provided_layer_account_id}:layer:${var.aws_provided_layer_name}:${var.aws_provided_layer_version}"
+  ]  
   environment_vars      = []
 }
 
@@ -134,6 +137,9 @@ module "lambda_movies_app" {
   source_code_hash         = data.archive_file.movies_app.output_base64sha256
   iam_policy_json_document = data.aws_iam_policy_document.movies_app.json
   log_retention_in_days    = var.log_retention_in_days
+  layers = [
+    "arn:aws:lambda:${var.aws_region}:${var.aws_provided_layer_account_id}:layer:${var.aws_provided_layer_name}:${var.aws_provided_layer_version}"
+  ]  
   environment_vars = [
     {
       DDB_TABLE = "${var.environment}-${var.movies_app_ddb_table}"

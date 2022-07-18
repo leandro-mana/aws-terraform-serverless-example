@@ -61,6 +61,11 @@ variable "source_code_hash" {
   type        = string
 }
 
+variable "layers" {
+  description = "The Lambda Layers ARNs"
+  type        = list(string)
+}
+
 variable "environment_vars" {
   description = "The Lambda Environmental variables"
   type        = list(any)
